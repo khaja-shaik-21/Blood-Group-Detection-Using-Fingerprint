@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blood Group Detector</title>
+    <link rel="stylesheet" href="{% static 'detector/css/styles.css' %}">
+</head>
+<body>
+    <div class="body">
+        <div class="Heading">
+            <h1>Fingerprint Based Blood Group Detection</h1>
+        </div>
+        <div class="Main-section">
+            <div class="Left-section">
+                <div class="Left-top">
+                    <h2>Fingerprint Capture</h2>
+                </div>
+                <div class="Left-bottom-empty">
+                    <div class="Left-bottom">
+                        <form method="post" enctype="multipart/form-data" id="predictionForm">
+                            {% csrf_token %}
+                            <div class="image-container">
+                                <img id="fingerprint" src="{% if fingerprint_base64 %}{{ fingerprint_base64 }}{% endif %}" alt="Fingerprint Image" class="fingerprint-image">
+                            </div>
+                            <br>
+                            <button type="button" class="capture-button" onclick="captureFingerprint()">Capture Fingerprint</button>
+                            <label for="fileInput" class="custom-file-upload">
+                                <input type="file" id="fileInput" name="fingerprint" accept="image/*" style="display: none;" onchange="previewImage(event); updateFileName(); hideStatus()">
+                                Choose File
+                            </label>
+                            <span id="fileName">No file chosen</span>
+                            <p id="status" style="display: {% if not fingerprint_base64 %}block{% else %}none{% endif %}">Place your finger on the scanner or upload an image...</p>
+                            <input type="hidden" name="has_image" id="hasImage" value="{% if fingerprint_base64 %}true{% else %}false{% endif %}">
+                            <input type="hidden" name="fingerprint_base64" id="fingerprint_base64" value="{% if fingerprint_base64 %}{{ fingerprint_base64 }}{% endif %}">
+                            <br>
+                            <button type="submit" class="capture-button" id="detectButton">Detect Blood Group</button>
+                            {% if error %}
+                                <p style="color: red;">{{ error }}</p>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="output-top">
+                    <h2>Predicted Blood Group:</h2>
+                </div>
+                <div class="output-bottom">
+                    <div id="loader" class="loader"></div>
+                    <h1 id="bloodGroupResult" style="display: {% if blood_group %}block{% else %}none{% endif %}">{{ blood_group }}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'detector/js/detect.js' %}"></script>
+</body>
+</html>
